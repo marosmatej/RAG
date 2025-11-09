@@ -1,0 +1,26 @@
+# Environment
+.env
+venv/
+env/
+ENV/
+*.pyc
+__pycache__/
+
+# Data
+data/uploads/*
+data/vector_db/*
+!data/uploads/.gitkeep
+!data/vector_db/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

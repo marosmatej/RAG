@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple RAG System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>📚 Simple RAG System</h1>
+            <p class="subtitle">Ask questions about your documents using AI</p>
+        </header>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Upload Section -->
+            <section class="section upload-section">
+                <h2>📤 Upload Documents</h2>
+                <div class="upload-area">
+                    <input type="file" id="fileInput" accept=".pdf,.txt,.docx" hidden>
+                    <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                        Choose File
+                    </button>
+                    <span id="fileName" class="file-name">No file chosen</span>
+                    <button class="btn btn-success" id="uploadBtn" disabled>Upload</button>
+                </div>
+                <div id="uploadStatus" class="status-message"></div>
+            </section>
+
+            <!-- Documents List Section -->
+            <section class="section documents-section">
+                <div class="section-header">
+                    <h2>📁 Uploaded Documents</h2>
+                    <button class="btn btn-secondary btn-small" id="refreshBtn">Refresh</button>
+                </div>
+                <div id="documentsList" class="documents-list">
+                    <p class="loading">Loading documents...</p>
+                </div>
+            </section>
+
+            <!-- Query Section -->
+            <section class="section query-section">
+                <h2>💬 Ask Questions</h2>
+                <div class="query-area">
+                    <textarea 
+                        id="questionInput" 
+                        placeholder="Ask a question about your documents... (e.g., 'What is the main topic?')"
+                        rows="3"
+                    ></textarea>
+                    <button class="btn btn-primary" id="queryBtn">Ask Question</button>
+                </div>
+                
+                <!-- Answer Display -->
+                <div id="answerContainer" class="answer-container hidden">
+                    <h3>Answer:</h3>
+                    <div id="answer" class="answer"></div>
+                    
+                    <div id="sourcesContainer" class="sources-container hidden">
+                        <h4>Sources:</h4>
+                        <div id="sources" class="sources"></div>
+                    </div>
+                </div>
+                
+                <div id="queryStatus" class="status-message"></div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>Built with FastAPI, LangChain, and ChromaDB</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

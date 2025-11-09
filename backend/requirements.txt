@@ -1,0 +1,25 @@
+# Core Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# RAG Components
+langchain==0.3.13
+langchain-community==0.3.13
+chromadb==0.5.23
+sentence-transformers==3.3.1
+
+# Document Processing
+PyPDF2==3.0.1
+python-docx==1.1.0
+# tiktoken==0.5.2  # Optional - skip if Rust compiler not available
+
+# LLM Integration (choose one or both)
+openai==1.58.1
+# ollama  # Uncomment if using Ollama
+
+# Utilities
+python-dotenv==1.0.0
+aiofiles==23.2.1
+pydantic==2.10.3
+pydantic-settings==2.7.0
