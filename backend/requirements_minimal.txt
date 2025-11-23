@@ -1,0 +1,20 @@
+# LIGHTWEIGHT VERSION - Minimal dependencies
+
+# Core Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# Document Processing
+PyPDF2==3.0.1
+python-docx==1.1.0
+
+# LLM (Groq uses OpenAI client)
+openai==1.58.1
+
+# Utilities
+python-dotenv==1.0.0
+pydantic==2.12.4
+pydantic-settings==2.11.0
+
+# That's it! No heavy ML libraries, no vector databases!

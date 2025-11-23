@@ -62,10 +62,17 @@ async function handleUpload() {
             body: formData
         });
 
-        const data = await response.json();
+        const txt = await response.text();
+        let data = null;
+        try {
+            data = JSON.parse(txt);
+        } catch (e) {
+            // non-JSON response
+        }
 
         if (response.ok) {
-            showStatus(uploadStatus, `✓ ${data.message} (${data.chunks} chunks created)`, 'success');
+            const msg = data ? `${data.message} (${data.chunks} chunks created)` : 'Uploaded';
+            showStatus(uploadStatus, `✓ ${msg}`, 'success');
             
             // Reset form
             fileInput.value = '';
@@ -74,7 +81,7 @@ async function handleUpload() {
             // Reload documents list
             loadDocuments();
         } else {
-            showStatus(uploadStatus, `✗ Error: ${data.detail}`, 'error');
+            showStatus(uploadStatus, `✗ Error: ${data && data.detail ? data.detail : txt}`, 'error');
             uploadBtn.disabled = false;
         }
     } catch (error) {
@@ -90,13 +97,15 @@ async function loadDocuments() {
     documentsList.innerHTML = '<p class="loading">Loading documents...</p>';
 
     try {
-        const response = await fetch(`${API_BASE_URL}/docs`);
-        const data = await response.json();
+        const response = await fetch(`${API_BASE_URL}/documents`);
+        const txt = await response.text();
+        let data = null;
+        try { data = JSON.parse(txt); } catch (e) { /* ignore */ }
 
         if (response.ok) {
-            displayDocuments(data.documents);
+            displayDocuments(data && data.documents ? data.documents : []);
         } else {
-            documentsList.innerHTML = `<p class="error">Error loading documents: ${data.detail}</p>`;
+            documentsList.innerHTML = `<p class="error">Error loading documents: ${data && data.detail ? data.detail : escapeHtml(txt)}</p>`;
         }
     } catch (error) {
         documentsList.innerHTML = `<p class="error">Error: ${error.message}</p>`;
@@ -125,17 +134,19 @@ async function deleteDocument(filename) {
     }
 
     try {
-        const response = await fetch(`${API_BASE_URL}/docs/${encodeURIComponent(filename)}`, {
+        const response = await fetch(`${API_BASE_URL}/documents/${encodeURIComponent(filename)}`, {
             method: 'DELETE'
         });
 
-        const data = await response.json();
+        const txt = await response.text();
+        let data = null;
+        try { data = JSON.parse(txt); } catch (e) { /* ignore */ }
 
         if (response.ok) {
             loadDocuments();
-            showStatus(uploadStatus, `✓ ${data.message}`, 'success');
+            showStatus(uploadStatus, `✓ ${data && data.message ? data.message : 'Deleted'}`, 'success');
         } else {
-            showStatus(uploadStatus, `✗ Error: ${data.detail}`, 'error');
+            showStatus(uploadStatus, `✗ Error: ${data && data.detail ? data.detail : escapeHtml(txt)}`, 'error');
         }
     } catch (error) {
         showStatus(uploadStatus, `✗ Error: ${error.message}`, 'error');
@@ -166,13 +177,15 @@ async function handleQuery() {
             body: JSON.stringify({ question })
         });
 
-        const data = await response.json();
+        const txt = await response.text();
+        let data = null;
+        try { data = JSON.parse(txt); } catch (e) { /* ignore */ }
 
         if (response.ok) {
-            displayAnswer(data.answer, data.sources);
+            displayAnswer(data && data.answer ? data.answer : 'No answer returned', data && data.sources ? data.sources : []);
             hideStatus(queryStatus);
         } else {
-            showStatus(queryStatus, `✗ Error: ${data.detail}`, 'error');
+            showStatus(queryStatus, `✗ Error: ${data && data.detail ? data.detail : escapeHtml(txt)}`, 'error');
         }
     } catch (error) {
         showStatus(queryStatus, `✗ Error: ${error.message}`, 'error');
@@ -192,14 +205,24 @@ function displayAnswer(answerText, sourcesData) {
     if (sourcesData && sourcesData.length > 0) {
         sources.innerHTML = sourcesData.map((source, index) => `
             <div class="source-item">
-                <div class="source-header">Source ${index + 1}: ${source.filename}</div>
-                <div class="source-text">${source.text}</div>
+                <div class="source-header">Source ${index + 1}: ${escapeHtml(source.filename || '')}</div>
+                <div class="source-text">${escapeHtml(source.text || source.snippet || '')}</div>
             </div>
         `).join('');
         sourcesContainer.classList.remove('hidden');
     } else {
         sourcesContainer.classList.add('hidden');
     }
+}
+
+// Small helper to avoid injecting raw HTML from backend into the page
+function escapeHtml(unsafe) {
+    return String(unsafe)
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/\"/g, "&quot;")
+         .replace(/'/g, "&#039;");
 }
 
 // Status Message Helpers
